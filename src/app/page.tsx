@@ -3,80 +3,33 @@
 import * as React from 'react';
 import { PulseGrid, TokenDetailModal } from '@/components/organisms';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setSelectedToken } from '@/store/slices/tokensSlice';
 import {
-  setTokens,
-  setLoading,
-  setCategoryLoading,
-  batchUpdatePrices,
-  setConnectionStatus,
-  setSelectedToken
-} from '@/store/slices/tokensSlice';
-import { generateProgressiveTokens, webSocketMock } from '@/lib/websocket-mock';
-import type { Token, TokenCategory } from '@/types';
+  useProgressiveTokens,
+  useErrorHandler,
+} from '@/hooks';
+import type { Token } from '@/types';
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { connectionStatus, selectedToken, lastConnectionTime } = useAppSelector((state) => state.tokens);
+  const { selectedToken } = useAppSelector((state) => state.tokens);
   const [isClient, setIsClient] = React.useState(false);
-  const allTokensRef = React.useRef<Token[]>([]);
 
-  // Initialize with progressive loading on mount
+  // Use the new progressive tokens hook with React Query integration
+  const { connectionStatus, lastConnectionTime } = useProgressiveTokens(12);
+
+  // Error handling with notifications
+  const { notifications, dismissNotification } = useErrorHandler({
+    maxRetries: 3,
+    onMaxRetriesReached: () => {
+      console.warn('Maximum retry attempts reached');
+    },
+  });
+
+  // Set client flag for hydration
   React.useEffect(() => {
     setIsClient(true);
-    dispatch(setLoading(true));
-    dispatch(setConnectionStatus('connecting'));
-
-    // Small initial delay before starting progressive load
-    const startDelay = setTimeout(() => {
-      const cleanup = generateProgressiveTokens(
-        12, // tokens per category
-        (category: TokenCategory, tokens: Token[], isComplete: boolean) => {
-          dispatch(setTokens({ category, tokens }));
-
-          if (isComplete) {
-            dispatch(setCategoryLoading({ category, loading: false }));
-
-            // Track all tokens for WebSocket mock
-            allTokensRef.current = [
-              ...allTokensRef.current.filter(t => t.category !== category),
-              ...tokens
-            ];
-
-            // Start WebSocket mock once all categories are loaded
-            const loadingState = {
-              'new-pairs': category === 'new-pairs',
-              'final-stretch': category === 'final-stretch',
-              'migrated': category === 'migrated',
-            };
-
-            // Check if this was the last category to complete
-            if (allTokensRef.current.length >= 36) {
-              dispatch(setConnectionStatus('connected'));
-              webSocketMock.start(allTokensRef.current);
-            }
-          }
-        },
-        4, // batch size
-        120 // delay between batches
-      );
-
-      return cleanup;
-    }, 200);
-
-    return () => {
-      clearTimeout(startDelay);
-      webSocketMock.stop();
-    };
-  }, [dispatch]);
-
-  // Subscribe to WebSocket price updates
-  React.useEffect(() => {
-    const unsubscribe = webSocketMock.subscribe((updates) => {
-      dispatch(batchUpdatePrices(updates));
-    });
-
-    return unsubscribe;
-  }, [dispatch]);
+  }, []);
 
   // Handle token click - open modal
   const handleTokenClick = React.useCallback((token: Token) => {
@@ -137,6 +90,37 @@ export default function Home() {
           Axiom Trade Clone
         </div>
       </header>
+
+      {/* Error Notifications */}
+      {notifications.length > 0 && (
+        <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+          {notifications.map((notification) => (
+            <div
+              key={notification.id}
+              className={`
+                px-4 py-3 rounded-lg shadow-lg backdrop-blur-sm
+                flex items-center justify-between gap-3
+                animate-in slide-in-from-right-5 duration-300
+                ${notification.type === 'error'
+                  ? 'bg-destructive/90 text-destructive-foreground'
+                  : notification.type === 'warning'
+                    ? 'bg-warning/90 text-warning-foreground'
+                    : 'bg-primary/90 text-primary-foreground'
+                }
+              `}
+            >
+              <span className="text-sm">{notification.message}</span>
+              <button
+                onClick={() => dismissNotification(notification.id)}
+                className="text-current hover:opacity-70 transition-opacity"
+                aria-label="Dismiss"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Main Grid */}
       <main className="flex-1 overflow-hidden">
