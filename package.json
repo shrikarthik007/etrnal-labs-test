@@ -7,7 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "analyze": "cross-env ANALYZE=true next build"
+    "analyze": "cross-env ANALYZE=true next build",
+    "test": "playwright test",
+    "test:visual": "playwright test tests/visual.spec.ts",
+    "test:a11y": "playwright test tests/accessibility.spec.ts",
+    "test:perf": "playwright test tests/performance.spec.ts",
+    "test:update": "playwright test --update-snapshots"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",
@@ -29,11 +34,14 @@
     "tailwind-merge": "^3.4.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.11.0",
     "@next/bundle-analyzer": "^16.1.1",
+    "@playwright/test": "^1.57.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "axe-playwright": "^2.2.2",
     "cross-env": "^10.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
