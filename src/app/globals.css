@@ -12,7 +12,7 @@
   /* Font families */
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
-  
+
   /* Color mapping for Tailwind */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -32,13 +32,13 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  
+
   /* Axiom-specific colors */
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
-  
+
   /* Border radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -48,7 +48,7 @@
 
 :root {
   --radius: 0.5rem;
-  
+
   /* Light mode (not primary, but defined for completeness) */
   --background: #ffffff;
   --foreground: #0a0a0a;
@@ -82,69 +82,69 @@
   /* Base backgrounds - True black for OLED and trading focus */
   --background: #000000;
   --foreground: #fafafa;
-  
+
   /* Card/Surface - Slightly elevated dark surfaces */
   --card: #0a0a0a;
   --card-foreground: #fafafa;
-  
+
   /* Secondary surface for token rows */
   --surface: #111111;
   --surface-hover: #1a1a1a;
   --surface-active: #222222;
-  
+
   /* Popover/Modal backgrounds */
   --popover: #0f0f0f;
   --popover-foreground: #fafafa;
-  
+
   /* Primary - Axiom blue accent */
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
   --primary-hover: #2563eb;
-  
+
   /* Secondary - Muted surfaces */
   --secondary: #1c1c1c;
   --secondary-foreground: #a1a1aa;
-  
+
   /* Muted text and backgrounds */
   --muted: #262626;
   --muted-foreground: #71717a;
-  
+
   /* Accent for highlights */
   --accent: #1f1f1f;
   --accent-foreground: #fafafa;
-  
+
   /* Destructive/Error - Red for losses */
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  
+
   /* Success - Green for gains */
   --success: #22c55e;
   --success-foreground: #ffffff;
   --success-muted: rgba(34, 197, 94, 0.15);
-  
+
   /* Error/Loss - Red for negative values */
   --error: #ef4444;
   --error-muted: rgba(239, 68, 68, 0.15);
-  
+
   /* Warning */
   --warning: #f59e0b;
   --warning-foreground: #ffffff;
-  
+
   /* Borders */
   --border: #262626;
   --border-muted: #1a1a1a;
-  
+
   /* Input fields */
   --input: #1a1a1a;
   --input-focus: #262626;
-  
+
   /* Focus ring */
   --ring: #3b82f6;
-  
+
   /* Solana chain color */
   --solana: #14f195;
   --solana-bg: rgba(20, 241, 149, 0.1);
-  
+
   /* BNB chain color */
   --bnb: #f0b90b;
   --bnb-bg: rgba(240, 185, 11, 0.1);
@@ -158,24 +158,31 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
 }
 
 @keyframes pulse-green {
-  0%, 100% {
+
+  0%,
+  100% {
     background-color: transparent;
   }
+
   50% {
     background-color: rgba(34, 197, 94, 0.3);
   }
 }
 
 @keyframes pulse-red {
-  0%, 100% {
+
+  0%,
+  100% {
     background-color: transparent;
   }
+
   50% {
     background-color: rgba(239, 68, 68, 0.3);
   }
@@ -185,6 +192,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -195,6 +203,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -206,6 +215,7 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -215,12 +225,10 @@
 /* Animation utility classes */
 .animate-shimmer {
   animation: shimmer 2s infinite linear;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.05) 50%,
-    transparent 100%
-  );
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      transparent 100%);
   background-size: 200% 100%;
 }
 
@@ -252,42 +260,42 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
+
   /* Tabular numbers for prices and statistics */
   .tabular-nums {
     font-variant-numeric: tabular-nums;
   }
-  
+
   /* Selection styling */
   ::selection {
     background-color: rgba(59, 130, 246, 0.3);
     color: #ffffff;
   }
-  
+
   /* Scrollbar styling for webkit browsers */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-  
+
   ::-webkit-scrollbar-track {
     background: transparent;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     background: #333333;
     border-radius: 3px;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     background: #444444;
   }
-  
+
   /* Firefox scrollbar */
   * {
     scrollbar-width: thin;
@@ -300,13 +308,14 @@
    ============================================ */
 
 @layer utilities {
+
   /* Glass effect for modals/popovers */
   .glass {
     background: rgba(15, 15, 15, 0.8);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-  
+
   /* Gradient text */
   .gradient-text {
     background: linear-gradient(135deg, #3b82f6 0%, #14f195 100%);
@@ -314,35 +323,35 @@
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
-  
+
   /* Token row hover effect */
   .token-row-hover {
     @apply transition-colors duration-150;
   }
-  
+
   .token-row-hover:hover {
     background-color: var(--surface-hover);
   }
-  
+
   /* Price change colors */
   .price-up {
     color: var(--success);
   }
-  
+
   .price-down {
     color: var(--destructive);
   }
-  
+
   /* Hide scrollbar but keep functionality */
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   /* Truncate with ellipsis */
   .truncate-2 {
     display: -webkit-box;
@@ -357,22 +366,115 @@
    ============================================ */
 
 @layer utilities {
+
   /* Container for three-column layout */
   .pulse-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0;
   }
-  
+
   @media (min-width: 768px) {
     .pulse-grid {
       grid-template-columns: repeat(2, 1fr);
     }
   }
-  
+
   @media (min-width: 1024px) {
     .pulse-grid {
       grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Responsive container */
+  .container-fluid {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  @media (min-width: 640px) {
+    .container-fluid {
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .container-fluid {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+
+  /* Mobile-first responsive text */
+  .text-responsive-sm {
+    font-size: 0.75rem;
+  }
+
+  @media (min-width: 640px) {
+    .text-responsive-sm {
+      font-size: 0.875rem;
+    }
+  }
+
+  /* Hide on mobile, show on tablet+ */
+  .hide-mobile {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
+    .hide-mobile {
+      display: flex;
+    }
+  }
+
+  /* Show on mobile, hide on tablet+ */
+  .show-mobile {
+    display: flex;
+  }
+
+  @media (min-width: 640px) {
+    .show-mobile {
+      display: none;
+    }
+  }
+
+  /* Sticky header/footer utilities */
+  .sticky-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  .sticky-footer {
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+  }
+
+  /* Responsive gap utilities */
+  .gap-responsive {
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .gap-responsive {
+      gap: 0.75rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .gap-responsive {
+      gap: 1rem;
+    }
+  }
+
+  /* Ultra-wide screen support */
+  @media (min-width: 1920px) {
+    .pulse-grid {
+      max-width: 1920px;
+      margin: 0 auto;
     }
   }
 }

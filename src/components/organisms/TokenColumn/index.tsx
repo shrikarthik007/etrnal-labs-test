@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
 import { cn } from '@/lib/utils';
 import type { Token, TokenCategory } from '@/types';
 import { ColumnHeader } from '../ColumnHeader';
@@ -24,9 +25,13 @@ const CATEGORY_TITLES: Record<TokenCategory, string> = {
     'migrated': 'Migrated',
 };
 
+// Estimated row height for virtual scrolling
+const ROW_HEIGHT = 52;
+
 /**
  * TokenColumn component wraps a category of tokens with header and scrollable list.
  * Each column is independently scrollable matching Axiom's Pulse page behavior.
+ * Uses virtual scrolling to render only visible rows for optimal performance.
  */
 export const TokenColumn = React.memo<TokenColumnProps>(({
     category,
@@ -42,6 +47,19 @@ export const TokenColumn = React.memo<TokenColumnProps>(({
 
     // Use sorted tokens based on Redux sortConfig
     const sortedTokens = useSortedTokens(tokens, category);
+
+    // Virtual scroll container ref
+    const parentRef = React.useRef<HTMLDivElement>(null);
+
+    // Virtual scrolling setup
+    const virtualizer = useVirtualizer({
+        count: sortedTokens.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => ROW_HEIGHT,
+        overscan: 5, // Render 5 extra items above/below viewport
+    });
+
+    const virtualItems = virtualizer.getVirtualItems();
 
     return (
         <div
@@ -59,8 +77,11 @@ export const TokenColumn = React.memo<TokenColumnProps>(({
                 onFilterClick={onFilterClick}
             />
 
-            {/* Scrollable Token List */}
-            <div className="flex-1 overflow-y-auto">
+            {/* Scrollable Token List with Virtual Scrolling */}
+            <div
+                ref={parentRef}
+                className="flex-1 overflow-y-auto"
+            >
                 {loading ? (
                     // Loading skeletons
                     <div className="animate-fade-in">
@@ -79,15 +100,31 @@ export const TokenColumn = React.memo<TokenColumnProps>(({
                         </p>
                     </div>
                 ) : (
-                    // Token list
-                    <div className="animate-fade-in">
-                        {sortedTokens.map((token) => (
-                            <TokenRow
-                                key={token.id}
-                                token={token}
-                                onClick={onTokenClick}
-                            />
-                        ))}
+                    // Virtualized Token list
+                    <div
+                        className="relative w-full"
+                        style={{
+                            height: `${virtualizer.getTotalSize()}px`,
+                        }}
+                    >
+                        {virtualItems.map((virtualItem) => {
+                            const token = sortedTokens[virtualItem.index];
+                            return (
+                                <div
+                                    key={token.id}
+                                    className="absolute top-0 left-0 w-full"
+                                    style={{
+                                        height: `${virtualItem.size}px`,
+                                        transform: `translateY(${virtualItem.start}px)`,
+                                    }}
+                                >
+                                    <TokenRow
+                                        token={token}
+                                        onClick={onTokenClick}
+                                    />
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -96,4 +133,3 @@ export const TokenColumn = React.memo<TokenColumnProps>(({
 });
 
 TokenColumn.displayName = 'TokenColumn';
-

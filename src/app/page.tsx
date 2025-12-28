@@ -1,18 +1,31 @@
 'use client';
 
 import * as React from 'react';
-import { PulseGrid, TokenDetailModal } from '@/components/organisms';
+import dynamic from 'next/dynamic';
+import { PulseGrid, Header, SubHeader, Footer } from '@/components/organisms';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { setSelectedToken } from '@/store/slices/tokensSlice';
 import {
   useProgressiveTokens,
   useErrorHandler,
 } from '@/hooks';
+import { selectTotalTokenCount, selectSelectedToken } from '@/store/selectors';
 import type { Token } from '@/types';
+
+// Dynamically import TokenDetailModal for code splitting
+// This reduces initial bundle size by loading the modal only when needed
+const TokenDetailModal = dynamic(
+  () => import('@/components/organisms/TokenDetailModal').then(mod => ({ default: mod.TokenDetailModal })),
+  {
+    ssr: false,
+    loading: () => null, // No loading state needed for modal
+  }
+);
 
 export default function Home() {
   const dispatch = useAppDispatch();
-  const { selectedToken } = useAppSelector((state) => state.tokens);
+  const selectedToken = useAppSelector(selectSelectedToken);
+  const totalTokens = useAppSelector(selectTotalTokenCount);
   const [isClient, setIsClient] = React.useState(false);
 
   // Use the new progressive tokens hook with React Query integration
@@ -54,46 +67,15 @@ export default function Home() {
 
   return (
     <div className="h-screen flex flex-col bg-background">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border/50">
-        <div className="flex items-center gap-3">
-          <h1 className="text-lg font-semibold text-foreground">Pulse</h1>
-          <div
-            className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background/50 hover:bg-muted/50 transition-colors cursor-default"
-            title={connectionStatus === 'connected'
-              ? `Connected${lastConnectionTime ? ` since ${new Date(lastConnectionTime).toLocaleTimeString()}` : ''}`
-              : connectionStatus === 'connecting'
-                ? 'Establishing connection...'
-                : 'Disconnected from server'}
-          >
-            <span
-              className={`h-2 w-2 rounded-full transition-colors ${connectionStatus === 'connected'
-                ? 'bg-success shadow-[0_0_6px_rgba(34,197,94,0.5)] animate-pulse'
-                : connectionStatus === 'connecting'
-                  ? 'bg-warning animate-pulse'
-                  : connectionStatus === 'error'
-                    ? 'bg-destructive'
-                    : 'bg-muted-foreground'
-                }`}
-            />
-            <span className="text-xs text-muted-foreground capitalize">
-              {connectionStatus}
-            </span>
-            {connectionStatus === 'connected' && lastConnectionTime && (
-              <span className="text-[10px] text-muted-foreground/60 ml-1">
-                • Live
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="text-xs text-muted-foreground">
-          Axiom Trade Clone
-        </div>
-      </header>
+      {/* Main Header with Navigation */}
+      <Header />
+
+      {/* Sub Header with Filters */}
+      <SubHeader />
 
       {/* Error Notifications */}
       {notifications.length > 0 && (
-        <div className="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
+        <div className="fixed top-16 right-4 z-50 flex flex-col gap-2 max-w-sm">
           {notifications.map((notification) => (
             <div
               key={notification.id}
@@ -127,7 +109,14 @@ export default function Home() {
         <PulseGrid onTokenClick={handleTokenClick} />
       </main>
 
-      {/* Token Detail Modal */}
+      {/* Footer with Connection Status */}
+      <Footer
+        connectionStatus={connectionStatus}
+        lastConnectionTime={lastConnectionTime}
+        totalTokens={totalTokens}
+      />
+
+      {/* Token Detail Modal - Dynamically imported */}
       <TokenDetailModal
         token={selectedToken}
         open={selectedToken !== null}

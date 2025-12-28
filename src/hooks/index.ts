@@ -19,3 +19,4 @@ export {
     useErrorHandler,
     useConnectionRecovery,
 } from './useErrorHandler';
+export { useVirtualList } from './useVirtualList';
