@@ -6,7 +6,7 @@ A pixel-perfect clone of Axiom Trade's Pulse page - a real-time token discovery 
 
 ## 🚀 Live Demo
 
-- **Vercel Deployment**: [Add your Vercel URL here]
+- **Vercel Deployment**:https://eterna-labs-test.vercel.app/
 - **Video Demo**: [Add your YouTube link here]
 
 ## ✨ Features
@@ -120,13 +120,6 @@ npm run test
 npm run test:update
 ```
 
-## 📦 Deployment
-
-### Vercel (Recommended)
-
-1. Push your code to GitHub
-2. Import your repository on [Vercel](https://vercel.com/new)
-3. Vercel auto-detects Next.js and deploys automatically
 
 ### Manual Build
 
